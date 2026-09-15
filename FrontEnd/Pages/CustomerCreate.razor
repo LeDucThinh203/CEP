@@ -30,7 +30,7 @@
                 </MudAlert>
             }
 
-            <CustomerForm Model="@_customerModel"
+            <CustomerForm CreateModel="@_createModel"
                           IsEdit="false"
                           IsSubmitting="@_isSubmitting"
                           OnValidSubmit="HandleCreateSubmit"
@@ -40,7 +40,7 @@
 </MudContainer>
 
 @code {
-    private CustomerDto _customerModel = new() { IsActive = true };
+    private CreateCustomerDto _createModel = new() { IsActive = true };
     private bool _isSubmitting = false;
     private string? _errorMessage;
 
@@ -55,17 +55,7 @@
         _isSubmitting = true;
         _errorMessage = null;
 
-        var createDto = new CreateCustomerDto
-        {
-            CustomerCode = _customerModel.CustomerCode,
-            FullName = _customerModel.FullName,
-            Email = _customerModel.Email,
-            PhoneNumber = _customerModel.PhoneNumber,
-            DateOfBirth = _customerModel.DateOfBirth,
-            IsActive = _customerModel.IsActive
-        };
-
-        var (success, message, _) = await CustomerService.CreateCustomerAsync(createDto);
+        var (success, message, _) = await CustomerService.CreateCustomerAsync(_createModel);
         _isSubmitting = false;
 
         if (success)
