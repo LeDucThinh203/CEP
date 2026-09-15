@@ -1,0 +1,26 @@
+## .NET Core & C#
+bin/
+obj/
+out/
+
+## Visual Studio & VS Code
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+## Build and Package artifacts
+*.nupkg
+*.snupkg
+packages/
+
+## Environment and Secrets
+appsettings.Production.json
+*.local.json
+secrets.json
+
+## OS generated files
+.DS_Store
+Thumbs.db
