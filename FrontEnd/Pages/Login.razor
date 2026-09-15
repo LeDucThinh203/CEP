@@ -1,0 +1,122 @@
+@page "/login"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Đăng nhập - CEP System</PageTitle>
+
+<div class="d-flex justify-center align-center" style="min-height: 90vh;">
+    <MudCard Elevation="4" Style="width: 100%; max-width: 440px; border-radius: 8px;">
+        <MudCardHeader Class="d-flex flex-column align-center pt-8">
+            <MudAvatar Color="Color.Primary" Size="Size.Large" Class="mb-3">
+                <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Medium" />
+            </MudAvatar>
+            <MudText Typo="Typo.h5" Class="font-weight-bold" Color="Color.Primary">ĐĂNG NHẬP HỆ THỐNG</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">CEP Customer Management System</MudText>
+        </MudCardHeader>
+
+        <MudCardContent Class="px-8 pb-4">
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4" Dense="true" ShowCloseIcon="true" CloseIconClicked="() => _errorMessage = null">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <MudTextField @bind-Value="_loginModel.Username"
+                              Label="Tên đăng nhập"
+                              Required="true"
+                              RequiredError="Vui lòng nhập tên đăng nhập"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              Disabled="@_isLoading" />
+
+                <MudTextField @bind-Value="_loginModel.Password"
+                              Label="Mật khẩu"
+                              InputType="@_passwordInputType"
+                              Required="true"
+                              RequiredError="Vui lòng nhập mật khẩu"
+                              Variant="Variant.Outlined"
+                              Class="mb-6"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@_passwordIcon"
+                              OnAdornmentClick="TogglePasswordVisibility"
+                              Disabled="@_isLoading" />
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Size="Size.Large"
+                           Disabled="@_isLoading"
+                           Class="py-2">
+                    @if (_isLoading)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Đang xác thực...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Đăng nhập</MudText>
+                    }
+                </MudButton>
+            </EditForm>
+        </MudCardContent>
+
+        <MudCardActions Class="px-8 pb-6 pt-0 justify-center">
+            <MudText Typo="Typo.caption" Color="Color.Dark">
+                Tài khoản demo: <strong>admin</strong> | Mật khẩu: <strong>Admin@123</strong>
+            </MudText>
+        </MudCardActions>
+    </MudCard>
+</div>
+
+@code {
+    private LoginRequestDto _loginModel = new() { Username = "admin", Password = "Admin@123" };
+    private bool _isLoading = false;
+    private string? _errorMessage;
+
+    private bool _showPassword = false;
+    private InputType _passwordInputType = InputType.Password;
+    private string _passwordIcon = Icons.Material.Filled.VisibilityOff;
+
+    private void TogglePasswordVisibility()
+    {
+        if (_showPassword)
+        {
+            _showPassword = false;
+            _passwordIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInputType = InputType.Password;
+        }
+        else
+        {
+            _showPassword = true;
+            _passwordIcon = Icons.Material.Filled.Visibility;
+            _passwordInputType = InputType.Text;
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        var (success, errorMessage) = await AuthService.LoginAsync(_loginModel);
+        _isLoading = false;
+
+        if (success)
+        {
+            Snackbar.Add("Đăng nhập thành công.", Severity.Success);
+            Navigation.NavigateTo("/customers");
+        }
+        else
+        {
+            _errorMessage = errorMessage ?? "Đăng nhập thất bại. Vui lòng thử lại.";
+        }
+    }
+}

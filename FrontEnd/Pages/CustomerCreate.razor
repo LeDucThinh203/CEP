@@ -1,0 +1,87 @@
+@page "/customers/create"
+@attribute [Authorize]
+@inject CustomerApiService CustomerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Thêm mới khách hàng - CEP System</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudBreadcrumbs Items="_breadcrumbItems" Class="pa-0 mb-4" />
+
+    <MudCard Elevation="2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Primary" Class="mr-2" Size="Size.Large" />
+                    <div>
+                        <MudText Typo="Typo.h5" Class="font-weight-bold" Color="Color.Primary">Thêm mới khách hàng</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Điền đầy đủ thông tin khách hàng vào biểu mẫu dưới đây</MudText>
+                    </div>
+                </div>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudCardContent>
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4" Dense="true" ShowCloseIcon="true" CloseIconClicked="() => _errorMessage = null">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            <CustomerForm Model="@_customerModel"
+                          IsEdit="false"
+                          IsSubmitting="@_isSubmitting"
+                          OnValidSubmit="HandleCreateSubmit"
+                          OnCancel="NavigateBack" />
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private CustomerDto _customerModel = new() { IsActive = true };
+    private bool _isSubmitting = false;
+    private string? _errorMessage;
+
+    private readonly List<BreadcrumbItem> _breadcrumbItems = new()
+    {
+        new BreadcrumbItem("Khách hàng", href: "/customers"),
+        new BreadcrumbItem("Thêm mới", href: null, disabled: true)
+    };
+
+    private async Task HandleCreateSubmit()
+    {
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        var createDto = new CreateCustomerDto
+        {
+            CustomerCode = _customerModel.CustomerCode,
+            FullName = _customerModel.FullName,
+            Email = _customerModel.Email,
+            PhoneNumber = _customerModel.PhoneNumber,
+            DateOfBirth = _customerModel.DateOfBirth,
+            IsActive = _customerModel.IsActive
+        };
+
+        var (success, message, _) = await CustomerService.CreateCustomerAsync(createDto);
+        _isSubmitting = false;
+
+        if (success)
+        {
+            Snackbar.Add("Thêm khách hàng thành công.", Severity.Success);
+            Navigation.NavigateTo("/customers");
+        }
+        else
+        {
+            _errorMessage = message;
+            Snackbar.Add(message, Severity.Error);
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo("/customers");
+    }
+}
