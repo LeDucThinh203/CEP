@@ -1,12 +1,34 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <RedirectToLogin />
+                </NotAuthorized>
+                <Authorizing>
+                    <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
+                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                    </div>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Không tìm thấy trang</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-12 text-center">
+                    <MudText Typo="Typo.h4" Color="Color.Error">404 - Không tìm thấy trang</MudText>
+                    <MudText Typo="Typo.body1" Class="mt-4">Đường dẫn bạn yêu cầu không tồn tại hoặc đã bị thay đổi.</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/customers" Class="mt-6">
+                        Quay lại danh sách khách hàng
+                    </MudButton>
+                </MudContainer>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
