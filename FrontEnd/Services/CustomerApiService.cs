@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using CEP.FrontEnd.Models;
 
 namespace CEP.FrontEnd.Services;
@@ -78,14 +79,15 @@ public class CustomerApiService
         try
         {
             var response = await _httpClient.PostAsJsonAsync("api/customers", dto);
-            var result = await response.Content.ReadFromJsonAsync<ApiResponse<CustomerDto>>();
 
             if (response.IsSuccessStatusCode)
             {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<CustomerDto>>();
                 return (true, result?.Message ?? "Thêm khách hàng thành công.", result?.Data);
             }
 
-            return (false, result?.Message ?? "Không thể thêm khách hàng.", null);
+            var errorMessage = await ParseErrorMessageAsync(response);
+            return (false, errorMessage, null);
         }
         catch (Exception ex)
         {
@@ -98,14 +100,15 @@ public class CustomerApiService
         try
         {
             var response = await _httpClient.PutAsJsonAsync($"api/customers/{id}", dto);
-            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
 
             if (response.IsSuccessStatusCode)
             {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
                 return (true, result?.Message ?? "Cập nhật khách hàng thành công.");
             }
 
-            return (false, result?.Message ?? "Không thể cập nhật khách hàng.");
+            var errorMessage = await ParseErrorMessageAsync(response);
+            return (false, errorMessage);
         }
         catch (Exception ex)
         {
@@ -118,18 +121,84 @@ public class CustomerApiService
         try
         {
             var response = await _httpClient.DeleteAsync($"api/customers/{id}");
-            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
 
             if (response.IsSuccessStatusCode)
             {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
                 return (true, result?.Message ?? "Xóa khách hàng thành công.");
             }
 
-            return (false, result?.Message ?? "Không thể xóa khách hàng.");
+            var errorMessage = await ParseErrorMessageAsync(response);
+            return (false, errorMessage);
         }
         catch (Exception ex)
         {
             return (false, $"Lỗi kết nối: {ex.Message}");
+        }
+    }
+
+    private static async Task<string> ParseErrorMessageAsync(HttpResponseMessage response)
+    {
+        try
+        {
+            var rawContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(rawContent))
+            {
+                return $"Yêu cầu thất bại với mã lỗi HTTP {(int)response.StatusCode}.";
+            }
+
+            using var doc = JsonDocument.Parse(rawContent);
+            var root = doc.RootElement;
+
+            // 1. Check custom ApiResponse message
+            if (root.TryGetProperty("message", out var messageProp) && !string.IsNullOrWhiteSpace(messageProp.GetString()))
+            {
+                return messageProp.GetString()!;
+            }
+
+            // 2. Check ASP.NET Core ValidationProblemDetails errors dictionary/array
+            if (root.TryGetProperty("errors", out var errorsProp))
+            {
+                var errorList = new List<string>();
+                if (errorsProp.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (var prop in errorsProp.EnumerateObject())
+                    {
+                        if (prop.Value.ValueKind == JsonValueKind.Array)
+                        {
+                            foreach (var err in prop.Value.EnumerateArray())
+                            {
+                                var text = err.GetString();
+                                if (!string.IsNullOrWhiteSpace(text)) errorList.Add(text);
+                            }
+                        }
+                    }
+                }
+                else if (errorsProp.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var err in errorsProp.EnumerateArray())
+                    {
+                        var text = err.GetString();
+                        if (!string.IsNullOrWhiteSpace(text)) errorList.Add(text);
+                    }
+                }
+
+                if (errorList.Count > 0)
+                {
+                    return string.Join(" ", errorList);
+                }
+            }
+
+            if (root.TryGetProperty("title", out var titleProp) && !string.IsNullOrWhiteSpace(titleProp.GetString()))
+            {
+                return titleProp.GetString()!;
+            }
+
+            return rawContent;
+        }
+        catch
+        {
+            return $"Lỗi xử lý phản hồi từ máy chủ (Mã {(int)response.StatusCode}).";
         }
     }
 }

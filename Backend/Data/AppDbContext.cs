@@ -28,7 +28,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
             entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
             entity.HasIndex(e => e.PhoneNumber);
-
+            entity.Property(e => e.DateOfBirth).HasColumnType("date");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         });
