@@ -1,7 +1,9 @@
 using System.Text;
 using CEP.Backend.Data;
 using CEP.Backend.Helpers;
+using CEP.Backend.Interfaces;
 using CEP.Backend.Middleware;
+using CEP.Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,8 +18,11 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register Helpers
+// Register Helpers & Services
 builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
