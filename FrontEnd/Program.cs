@@ -31,7 +31,7 @@ public class Program
         builder.Services.AddTransient<AuthorizationMessageHandler>();
 
         // Configure Backend API HttpClient
-        var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "https://localhost:7230/";
+        var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5106/";
         if (!apiBaseUrl.EndsWith("/"))
         {
             apiBaseUrl += "/";
