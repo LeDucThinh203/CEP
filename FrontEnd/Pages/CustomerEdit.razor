@@ -59,7 +59,7 @@
     [Parameter]
     public int Id { get; set; }
 
-    private CustomerDto _customerModel = new();
+    private CreateCustomerDto _customerModel = new();
     private bool _isLoading = true;
     private bool _notFound = false;
     private bool _isSubmitting = false;
@@ -84,7 +84,16 @@
 
         if (response != null && response.Success && response.Data != null)
         {
-            _customerModel = response.Data;
+            var data = response.Data;
+            _customerModel = new CreateCustomerDto
+            {
+                CustomerCode = data.CustomerCode,
+                FullName = data.FullName,
+                Email = data.Email,
+                PhoneNumber = data.PhoneNumber,
+                DateOfBirth = data.DateOfBirth,
+                IsActive = data.IsActive
+            };
             _notFound = false;
         }
         else
