@@ -1,0 +1,18 @@
+@if (IsLoading)
+{
+    <div class="d-flex flex-column align-center justify-center my-6">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+        @if (!string.IsNullOrWhiteSpace(Text))
+        {
+            <MudText Typo="Typo.body2" Class="mt-2 text-muted">@Text</MudText>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; } = false;
+
+    [Parameter]
+    public string Text { get; set; } = "Đang tải dữ liệu...";
+}
