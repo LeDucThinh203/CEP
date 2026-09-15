@@ -1,17 +1,15 @@
-@using System.Text.RegularExpressions
-
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
 
     <MudGrid Spacing="3">
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.CustomerCode"
+                          For="@(() => Model.CustomerCode)"
                           Label="Mã khách hàng"
                           Required="true"
-                          RequiredError="Mã khách hàng là bắt buộc"
                           MaxLength="50"
                           ReadOnly="@IsEdit"
-                          HelperText="@(IsEdit ? "Mã khách hàng không được phép chỉnh sửa" : "Nhập mã định danh khách hàng (Ví dụ: KH001)")"
+                          HelperText="@(IsEdit ? "Mã khách hàng không được phép chỉnh sửa" : "Nhập mã định danh (Ví dụ: KH001)")"
                           Variant="Variant.Outlined"
                           Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Badge" />
@@ -19,9 +17,9 @@
 
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.FullName"
+                          For="@(() => Model.FullName)"
                           Label="Họ và tên"
                           Required="true"
-                          RequiredError="Họ và tên là bắt buộc"
                           MaxLength="100"
                           Variant="Variant.Outlined"
                           Adornment="Adornment.Start"
@@ -30,10 +28,9 @@
 
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.Email"
+                          For="@(() => Model.Email)"
                           Label="Email"
                           Required="true"
-                          RequiredError="Email là bắt buộc"
-                          Validation="@(new Func<string, string?>(ValidateEmail))"
                           MaxLength="100"
                           Variant="Variant.Outlined"
                           Adornment="Adornment.Start"
@@ -42,10 +39,9 @@
 
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.PhoneNumber"
+                          For="@(() => Model.PhoneNumber)"
                           Label="Số điện thoại"
                           Required="true"
-                          RequiredError="Số điện thoại là bắt buộc"
-                          Validation="@(new Func<string, string?>(ValidatePhone))"
                           MaxLength="20"
                           Variant="Variant.Outlined"
                           Adornment="Adornment.Start"
@@ -54,6 +50,7 @@
 
         <MudItem xs="12" sm="6">
             <MudDatePicker @bind-Date="Model.DateOfBirth"
+                           For="@(() => Model.DateOfBirth)"
                            Label="Ngày sinh"
                            MaxDate="@DateTime.Today"
                            Editable="true"
@@ -128,25 +125,5 @@
         {
             await OnCancel.InvokeAsync();
         }
-    }
-
-    private string? ValidateEmail(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email)) return "Email là bắt buộc";
-        if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-        {
-            return "Định dạng email không hợp lệ (ví dụ: abc@domain.com)";
-        }
-        return null;
-    }
-
-    private string? ValidatePhone(string phone)
-    {
-        if (string.IsNullOrWhiteSpace(phone)) return "Số điện thoại là bắt buộc";
-        if (!Regex.IsMatch(phone, @"^[0-9+\-\s()]{8,20}$"))
-        {
-            return "Số điện thoại không hợp lệ";
-        }
-        return null;
     }
 }
