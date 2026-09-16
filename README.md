@@ -132,42 +132,39 @@ CEP
 
 ---
 
-## Database Setup
-1. Mở Terminal và di chuyển vào thư mục Backend:
-   ```bash
-   cd Backend
-   ```
-2. Thực hiện cập nhật Database bằng EF Core:
-   ```bash
-   dotnet ef database update
-   ```
+## Hướng dẫn chạy dự án
+
+### 1. Chạy Backend
+Mở Terminal:
+```bash
+cd Backend
+dotnet restore
+dotnet ef database update
+dotnet run --launch-profile http
+```
+- **Backend API:** `http://localhost:5106`
+- **Swagger UI:** `http://localhost:5106/swagger`
 
 ---
 
-## Migration
+### 2. Chạy Frontend
+Mở một cửa sổ Terminal mới:
+```bash
+cd FrontEnd
+dotnet run --launch-profile http
+```
+- **Giao diện Web:** `http://localhost:5158`
+
+> **Lưu ý:** Lệnh trên dùng `--launch-profile http` để chạy cố định trên cặp port **5106** (Backend) và **5158** (Frontend) đã khớp sẵn cấu hình CORS và API, giúp copy-paste chạy ngay mà không gặp lỗi HTTPS hay mixed-content.
+
+---
+
+## Migration (Tùy chọn khi phát triển)
 Tạo migration mới khi có sự thay đổi Entity:
 ```bash
 cd Backend
 dotnet ef migrations add <MigrationName>
 dotnet ef database update
-```
-
----
-
-## Run Backend
-```bash
-cd Backend
-dotnet run
-```
-Swagger UI có thể truy cập qua URL hiển thị trên terminal (ví dụ: `https://localhost:7xxx/swagger`).
-
----
-
-## Run FrontEnd
-Mở một cửa sổ Terminal mới:
-```bash
-cd FrontEnd
-dotnet run
 ```
 
 ---
@@ -183,7 +180,7 @@ dotnet run
 Hệ thống được seed sẵn tài khoản quản trị mặc định:
 - **Username:** `admin`
 - **Password:** `Admin@123`
-*(Mật khẩu được lưu trữ an toàn dưới dạng Hash, không lưu Plain Text).*
+*(Mật khẩu được lưu trữ an toàn dưới dạng Hash bằng PBKDF2-SHA256 (100.000 iterations & Salt ngẫu nhiên), không lưu Plain Text).*
 
 ---
 
@@ -221,8 +218,7 @@ git push -u origin main
 
 ---
 
-## Future Improvements
-- Bổ sung cơ chế Refresh Token cho JWT.
-- Xuất dữ liệu báo cáo danh sách khách hàng ra Excel/PDF.
-- Cấu hình phân quyền động theo nhiều vai trò (Role-based Authorization nâng cao).
-- Tích hợp Unit Test và Integration Test tự động qua CI/CD Pipeline.
+## Project Resources / Tài liệu đính kèm
+- **Analysis & Planning:** https://drive.google.com/drive/folders/15eLty4_XojJxqrV30YWbrZFf8PrBYzdp?usp=sharing
+- **Demo Video:** https://drive.google.com/drive/folders/11Gwsxh7Ha8SQTSjWLgGhKAObo_-0fSks?usp=sharing
+- **Postman Collection:** https://drive.google.com/drive/folders/1sxfBzVDvaH3zTTKaLqyl3ZgeI8HoESHo?usp=sharing

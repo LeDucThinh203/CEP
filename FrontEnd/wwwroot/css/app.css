@@ -1,5 +1,14 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Ngăn button bị co ép text xuống dòng khi menu drawer đóng/mở */
+.mud-button {
+    white-space: nowrap !important;
+}
+
+.mud-button-label {
+    white-space: nowrap !important;
 }
 
 h1:focus {
