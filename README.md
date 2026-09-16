@@ -183,7 +183,11 @@ dotnet run
 Hệ thống được seed sẵn tài khoản quản trị mặc định:
 - **Username:** `admin`
 - **Password:** `Admin@123`
+<<<<<<< Updated upstream
 *(Mật khẩu được lưu trữ an toàn dưới dạng Hash, không lưu Plain Text).*
+=======
+*(Mật khẩu được lưu trữ an toàn dưới dạng Hash bằng PBKDF2-SHA256 (100.000 iterations & Salt ngẫu nhiên), không lưu Plain Text).*
+>>>>>>> Stashed changes
 
 ---
 

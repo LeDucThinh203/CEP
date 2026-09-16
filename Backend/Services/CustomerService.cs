@@ -50,7 +50,7 @@ public class CustomerService : ICustomerService
 
         // 5. Pagination: Ensure OrderBy precedes Skip and Take
         var page = queryDto.Page > 0 ? queryDto.Page : 1;
-        var pageSize = queryDto.PageSize > 0 ? queryDto.PageSize : 10;
+        var pageSize = Math.Clamp(queryDto.PageSize <= 0 ? CustomerQueryDto.DefaultPageSize : queryDto.PageSize, 1, CustomerQueryDto.MaxPageSize);
 
         var items = await query
             .Skip((page - 1) * pageSize)
