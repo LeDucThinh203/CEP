@@ -61,6 +61,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 
     public void MarkUserAsLoggedOut()
     {
+        // Phát thông báo trạng thái người dùng trở về vô danh (_anonymous)
         NotifyAuthenticationStateChanged(Task.FromResult(_anonymous));
     }
 

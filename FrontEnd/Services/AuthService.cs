@@ -58,6 +58,7 @@ public class AuthService
     public async Task LogoutAsync()
     {
         await _tokenService.RemoveTokenAsync();
+        // Xóa Token khỏi localStorage
         if (_authStateProvider is CustomAuthenticationStateProvider customProvider)
         {
             customProvider.MarkUserAsLoggedOut();
