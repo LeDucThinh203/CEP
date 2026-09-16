@@ -8,7 +8,7 @@
 <PageTitle>Danh sách khách hàng - CEP System</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <div class="d-flex justify-space-between align-center mb-4">
+    <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-4">
         <div>
             <MudText Typo="Typo.h5" Class="font-weight-bold" Color="Color.Primary">Danh sách khách hàng</MudText>
             <MudText Typo="Typo.body2" Color="Color.Secondary">Quản lý và theo dõi thông tin khách hàng trong hệ thống</MudText>
@@ -16,7 +16,9 @@
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    StartIcon="@Icons.Material.Filled.Add"
-                   Href="/customers/create">
+                   Href="/customers/create"
+                   Class="flex-shrink-0"
+                   Style="white-space: nowrap;">
             Thêm khách hàng
         </MudButton>
     </div>
@@ -24,7 +26,7 @@
     <MudCard Elevation="2" Class="mb-4">
         <MudCardContent>
             <MudGrid Spacing="2" Class="align-center">
-                <MudItem xs="12" sm="5">
+                <MudItem xs="12" sm="12" md="5" lg="6">
                     <MudTextField @bind-Value="_searchQuery"
                                   Placeholder="Tìm theo họ tên, số điện thoại hoặc mã KH..."
                                   Adornment="Adornment.Start"
@@ -36,7 +38,7 @@
                                   OnKeyUp="HandleSearchKeyUp" />
                 </MudItem>
 
-                <MudItem xs="12" sm="4">
+                <MudItem xs="12" sm="6" md="3" lg="3">
                     <MudSelect T="bool?"
                                Value="_selectedStatus"
                                ValueChanged="OnStatusFilterChanged"
@@ -50,16 +52,21 @@
                     </MudSelect>
                 </MudItem>
 
-                <MudItem xs="12" sm="3" Class="d-flex justify-end gap-2">
+                <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex align-center gap-2">
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                OnClick="SearchCustomers"
-                               StartIcon="@Icons.Material.Filled.Search">
+                               StartIcon="@Icons.Material.Filled.Search"
+                               Class="flex-grow-1"
+                               Style="flex: 1; white-space: nowrap; min-height: 40px;">
                         Tìm kiếm
                     </MudButton>
                     <MudButton Variant="Variant.Outlined"
                                Color="Color.Default"
-                               OnClick="ResetFilter">
+                               OnClick="ResetFilter"
+                               StartIcon="@Icons.Material.Filled.Refresh"
+                               Class="flex-grow-1"
+                               Style="flex: 1; white-space: nowrap; min-height: 40px;">
                         Đặt lại
                     </MudButton>
                 </MudItem>
@@ -139,7 +146,7 @@
     <!-- Pagination Controls -->
     @if (_totalPages > 1)
     {
-        <div class="d-flex justify-space-between align-center mt-4">
+        <div class="d-flex justify-space-between align-center flex-wrap gap-2 mt-4">
             <MudText Typo="Typo.caption" Color="Color.Secondary">
                 Hiển thị trang <strong>@_currentPage</strong> / <strong>@_totalPages</strong> (Tổng số: <strong>@_totalItems</strong> khách hàng)
             </MudText>
