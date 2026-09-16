@@ -133,14 +133,52 @@ CEP
 ---
 
 ## Database Setup
-1. Mở Terminal và di chuyển vào thư mục Backend:
+
+### 1. Cấu hình Connection String
+Trước khi khởi chạy hoặc cập nhật database, hãy mở file `Backend/appsettings.json` và điều chỉnh chuỗi kết nối `DefaultConnection` sao cho phù hợp với môi trường SQL Server trên máy của bạn:
+
+- **Sử dụng SQL Server LocalDB (thường có sẵn khi cài Visual Studio):**
+  ```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=CEPDatabase;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+  }
+  ```
+
+- **Sử dụng SQL Server với Windows Authentication (Local / Named Instance):**
+  ```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_SERVER;Database=CEPDatabase;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
+  }
+  ```
+  *(Thay `YOUR_SERVER` bằng tên server trên máy bạn, ví dụ: `.`, `localhost`, `.\\SQLEXPRESS`, `.\\SQL2022`,...)*
+
+- **Sử dụng SQL Server với SQL Authentication (Tài khoản sa/User riêng):**
+  ```json
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_SERVER;Database=CEPDatabase;User Id=YOUR_USER;Password=YOUR_PASSWORD;TrustServerCertificate=True;MultipleActiveResultSets=true"
+  }
+  ```
+
+---
+
+### 2. Khởi tạo & Cập nhật Database
+Mở Terminal tại thư mục gốc của dự án và thực hiện các bước sau:
+
+1. Di chuyển vào thư mục `Backend`:
    ```bash
    cd Backend
    ```
-2. Thực hiện cập nhật Database bằng EF Core:
+
+2. Cài đặt công cụ `dotnet-ef` (nếu máy chưa cài đặt):
+   ```bash
+   dotnet tool install --global dotnet-ef
+   ```
+
+3. Thực hiện áp dụng migration để tự động tạo cơ sở dữ liệu và seed dữ liệu ban đầu:
    ```bash
    dotnet ef database update
    ```
+   *(Sau khi chạy lệnh thành công, database `CEPDatabase` sẽ được tạo kèm đầy đủ bảng, dữ liệu tài khoản quản trị `admin` và các khách hàng mẫu).*
 
 ---
 
@@ -172,10 +210,14 @@ dotnet run
 
 ---
 
-## JWT Login
-- Khi đăng nhập thành công, token JWT sẽ được lưu tại trình duyệt.
-- Các request gửi tới Backend sẽ tự động đính kèm `Authorization: Bearer <token>`.
-- Khi token hết hạn hoặc không hợp lệ, hệ thống sẽ tự động đăng xuất và chuyển hướng về trang `/login`.
+## JWT Login & Security
+- **Cơ chế hoạt động**:
+  - Khi đăng nhập thành công, token JWT sẽ được lưu tại `localStorage` / bộ nhớ trình duyệt của Client.
+  - Mọi request tiếp theo gửi tới Backend sẽ tự động đính kèm header `Authorization: Bearer <token>`.
+  - Khi token hết hạn hoặc không hợp lệ, hệ thống sẽ tự động đăng xuất và chuyển hướng người dùng về trang `/login`.
+
+> [!WARNING]
+> **Lưu ý về JWT Secret**: Chuỗi `Jwt:Key` trong `Backend/appsettings.json` chỉ là **Development / Demo Key** để thuận tiện chạy thử nghiệm khi clone dự án, **tuyệt đối không dùng cho Production**. Trong môi trường thực tế, nên quản lý qua `dotnet user-secrets` hoặc biến môi trường.
 
 ---
 
@@ -183,7 +225,7 @@ dotnet run
 Hệ thống được seed sẵn tài khoản quản trị mặc định:
 - **Username:** `admin`
 - **Password:** `Admin@123`
-*(Mật khẩu được lưu trữ an toàn dưới dạng Hash, không lưu Plain Text).*
+*(Mật khẩu được lưu trữ an toàn dưới dạng Hash bằng BCrypt/HMAC SHA-512, không lưu Plain Text).*
 
 ---
 
@@ -220,9 +262,3 @@ git push -u origin main
 ```
 
 ---
-
-## Future Improvements
-- Bổ sung cơ chế Refresh Token cho JWT.
-- Xuất dữ liệu báo cáo danh sách khách hàng ra Excel/PDF.
-- Cấu hình phân quyền động theo nhiều vai trò (Role-based Authorization nâng cao).
-- Tích hợp Unit Test và Integration Test tự động qua CI/CD Pipeline.
