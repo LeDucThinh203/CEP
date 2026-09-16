@@ -71,7 +71,9 @@
                            Color="Color.Secondary"
                            OnClick="HandleCancel"
                            Disabled="@IsSubmitting"
-                           StartIcon="@Icons.Material.Filled.ArrowBack">
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           Class="flex-shrink-0"
+                           Style="white-space: nowrap;">
                     Quay lại
                 </MudButton>
 
@@ -79,6 +81,8 @@
                            Variant="Variant.Filled"
                            Color="Color.Primary"
                            Disabled="@IsSubmitting"
+                           Class="flex-shrink-0"
+                           Style="white-space: nowrap;"
                            StartIcon="@(IsSubmitting ? null : Icons.Material.Filled.Save)">
                     @if (IsSubmitting)
                     {
@@ -169,7 +173,9 @@ else if (EffectiveCreateModel != null)
                            Color="Color.Secondary"
                            OnClick="HandleCancel"
                            Disabled="@IsSubmitting"
-                           StartIcon="@Icons.Material.Filled.ArrowBack">
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           Class="flex-shrink-0"
+                           Style="white-space: nowrap;">
                     Quay lại
                 </MudButton>
 
@@ -177,6 +183,8 @@ else if (EffectiveCreateModel != null)
                            Variant="Variant.Filled"
                            Color="Color.Primary"
                            Disabled="@IsSubmitting"
+                           Class="flex-shrink-0"
+                           Style="white-space: nowrap;"
                            StartIcon="@(IsSubmitting ? null : Icons.Material.Filled.Save)">
                     @if (IsSubmitting)
                     {
