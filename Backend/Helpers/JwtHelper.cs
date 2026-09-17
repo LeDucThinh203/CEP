@@ -18,7 +18,11 @@ public class JwtHelper
     public string GenerateToken(User user)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
-        var secretKey = jwtSettings["Key"] ?? "Default_Development_Secret_Key_32_Chars_Long!";
+        var secretKey = jwtSettings["Key"];
+        if (string.IsNullOrWhiteSpace(secretKey))
+        {
+            throw new InvalidOperationException("Cấu hình JWT: 'Jwt:Key' không được để trống. Vui lòng cấu hình secret key qua configuration hoặc biến môi trường.");
+        }
         var issuer = jwtSettings["Issuer"] ?? "CEP.Backend";
         var audience = jwtSettings["Audience"] ?? "CEP.FrontEnd";
         var expireMinutes = int.TryParse(jwtSettings["ExpireMinutes"], out var minutes) ? minutes : 60;
