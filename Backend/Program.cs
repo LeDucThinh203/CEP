@@ -41,7 +41,11 @@ builder.Services.AddCors(options =>
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["Key"] ?? "CEP_CustomerManagementSystem_SecretKey_2026_SecureKey!#";
+var secretKey = jwtSettings["Key"];
+if (string.IsNullOrWhiteSpace(secretKey))
+{
+    throw new InvalidOperationException("Cấu hình JWT: 'Jwt:Key' không được để trống. Vui lòng cấu hình secret key qua configuration hoặc biến môi trường.");
+}
 
 builder.Services.AddAuthentication(options =>
 {
