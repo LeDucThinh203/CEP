@@ -20,7 +20,8 @@ Hệ thống Quản lý Khách hàng Mini (CEP Customer Management System) đư�
 - **Xác thực & Phân quyền**:
   - JWT Authentication với token-based security.
   - Phân quyền API bằng `[Authorize]`.
-  - Quản lý trạng thái đăng nhập qua `CustomAuthenticationStateProvider`.
+  - Quản lý trạng thái đăng nhập qua `CustomAuthenticationStateProvider` (chuẩn hóa Base64Url).
+  - Kiến trúc JWT Fail-fast, phân tách cấu hình an toàn giữa Development và Production.
 - **Giao diện hiện đại**:
   - Blazor WebAssembly kết hợp thư viện MudBlazor chuyên nghiệp, trực quan.
   - Thông báo Snackbar, biểu tượng Loading khi thực hiện tác vụ bất đồng bộ.
@@ -202,10 +203,12 @@ dotnet ef database update
 - **Cơ chế hoạt động**:
   - Khi đăng nhập thành công, token JWT sẽ được lưu tại `localStorage` / bộ nhớ trình duyệt của Client.
   - Mọi request tiếp theo gửi tới Backend sẽ tự động đính kèm header `Authorization: Bearer <token>`.
+  - Phía Client (`CustomAuthenticationStateProvider`) giải mã payload token tuân thủ chuẩn **Base64Url** (chuyển đổi `-` $\rightarrow$ `+`, `_` $\rightarrow$ `/` và bù padding `=`), ngăn ngừa việc từ chối nhầm các token hợp lệ.
   - Khi token hết hạn hoặc không hợp lệ, hệ thống sẽ tự động đăng xuất và chuyển hướng người dùng về trang `/login`.
-
-> [!WARNING]
-> **Lưu ý về JWT Secret**: Chuỗi `Jwt:Key` trong `Backend/appsettings.json` chỉ là **Development / Demo Key** để thuận tiện chạy thử nghiệm khi clone dự án, **tuyệt đối không dùng cho Production**. Trong môi trường thực tế, nên quản lý qua `dotnet user-secrets` hoặc biến môi trường.
+- **Cấu hình an toàn & Cơ chế Fail-fast**:
+  - Loại bỏ hoàn toàn fallback secret ngầm định trong mã nguồn (`Program.cs` và `JwtHelper.cs`). Nếu thiếu cấu hình `Jwt:Key`, ứng dụng sẽ ném ngay ngoại lệ `InvalidOperationException` (Fail-fast) ngay khi khởi động, tránh rủi ro phát token bằng một key nhưng xác thực bằng key khác.
+  - **Môi trường Development**: Demo key được đặt riêng tại `Backend/appsettings.Development.json` để thuận tiện chạy thử nghiệm cục bộ khi clone dự án.
+  - **Môi trường Production**: File `Backend/appsettings.json` để trống `Jwt:Key`, bắt buộc cấu hình secret an toàn thông qua biến môi trường (`Jwt__Key`) hoặc Secret Manager khi triển khai thực tế.
 
 ---
 
