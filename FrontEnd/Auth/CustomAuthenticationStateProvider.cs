@@ -72,7 +72,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
             var parts = jwt.Split('.');
             if (parts.Length < 2) return null;
 
-            var payload = parts[1];
+            var payload = parts[1].Replace('-', '+').Replace('_', '/');
             switch (payload.Length % 4)
             {
                 case 2: payload += "=="; break;
