@@ -21,7 +21,7 @@ Hệ thống Quản lý Khách hàng Mini (CEP Customer Management System) đư�
   - JWT Authentication với token-based security.
   - Phân quyền API bằng `[Authorize]`.
   - Quản lý trạng thái đăng nhập qua `CustomAuthenticationStateProvider` (chuẩn hóa Base64Url).
-  - Kiến trúc JWT Fail-fast, phân tách cấu hình an toàn giữa Development và Production.
+  - Kiến trúc JWT Fail-fast, kiểm tra chặt chẽ cấu hình secret key khi khởi chạy.
 - **Giao diện hiện đại**:
   - Blazor WebAssembly kết hợp thư viện MudBlazor chuyên nghiệp, trực quan.
   - Thông báo Snackbar, biểu tượng Loading khi thực hiện tác vụ bất đồng bộ.
@@ -206,9 +206,9 @@ dotnet ef database update
   - Phía Client (`CustomAuthenticationStateProvider`) giải mã payload token tuân thủ chuẩn **Base64Url** (chuyển đổi `-` $\rightarrow$ `+`, `_` $\rightarrow$ `/` và bù padding `=`), ngăn ngừa việc từ chối nhầm các token hợp lệ.
   - Khi token hết hạn hoặc không hợp lệ, hệ thống sẽ tự động đăng xuất và chuyển hướng người dùng về trang `/login`.
 - **Cấu hình an toàn & Cơ chế Fail-fast**:
-  - Loại bỏ hoàn toàn fallback secret ngầm định trong mã nguồn (`Program.cs` và `JwtHelper.cs`). Nếu thiếu cấu hình `Jwt:Key`, ứng dụng sẽ ném ngay ngoại lệ `InvalidOperationException` (Fail-fast) ngay khi khởi động, tránh rủi ro phát token bằng một key nhưng xác thực bằng key khác.
-  - **Môi trường Development**: Demo key được đặt riêng tại `Backend/appsettings.Development.json` để thuận tiện chạy thử nghiệm cục bộ khi clone dự án.
-  - **Môi trường Production**: File `Backend/appsettings.json` để trống `Jwt:Key`, bắt buộc cấu hình secret an toàn thông qua biến môi trường (`Jwt__Key`) hoặc Secret Manager khi triển khai thực tế.
+  - Loại bỏ hoàn toàn fallback secret ngầm định trong mã nguồn (`Program.cs` và `JwtHelper.cs`). Nếu thiếu cấu hình `Jwt:Key` (hoặc để trống), ứng dụng sẽ ném ngay ngoại lệ `InvalidOperationException` (Fail-fast) ngay khi khởi động, tránh rủi ro phát token bằng một key nhưng xác thực bằng key khác.
+  - **Cấu hình mặc định cục bộ**: Cả `Backend/appsettings.json` và `Backend/appsettings.Development.json` đều đã được thiết lập sẵn key mặc định (`CEP_CustomerManagementSystem_SecretKey_2026_SecureKey!#`), giúp clone dự án về là có thể chạy thử nghiệm ngay (out-of-the-box).
+  - **Khuyến nghị cho Production**: Khi triển khai môi trường thực tế, cần ghi đè `Jwt:Key` bằng một chuỗi secret an toàn thông qua biến môi trường (`Jwt__Key`) hoặc dịch vụ quản lý bí mật (Secret Manager / Key Vault) thay vì sử dụng key mặc định trong file cấu hình.
 
 ---
 
