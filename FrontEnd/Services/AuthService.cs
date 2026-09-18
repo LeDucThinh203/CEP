@@ -41,10 +41,22 @@ public class AuthService
                 }
             }
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            try
             {
                 var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponse>();
-                return (false, errorResponse?.Message ?? "Tên đăng nhập hoặc mật khẩu không chính xác.");
+                if (!string.IsNullOrWhiteSpace(errorResponse?.Message))
+                {
+                    return (false, errorResponse.Message);
+                }
+            }
+            catch
+            {
+                // Response content was not JSON or did not match ApiResponse
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return (false, "Tên đăng nhập hoặc mật khẩu không chính xác.");
             }
 
             return (false, "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");

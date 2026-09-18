@@ -15,6 +15,9 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
+        // Configure Logging
+        builder.Logging.AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Warning);
+
         // Register MudBlazor services
         builder.Services.AddMudServices();
 

@@ -19,17 +19,29 @@ public static class PasswordHelper
 
     public static bool VerifyPassword(string password, string storedHash)
     {
+        if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(storedHash))
+        {
+            return false;
+        }
+
         string[] parts = storedHash.Split('.');
         if (parts.Length != 2)
         {
             return false;
         }
 
-        byte[] salt = Convert.FromBase64String(parts[0]);
-        byte[] hash = Convert.FromBase64String(parts[1]);
+        try
+        {
+            byte[] salt = Convert.FromBase64String(parts[0]);
+            byte[] hash = Convert.FromBase64String(parts[1]);
 
-        byte[] computedHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithm, KeySize);
+            byte[] computedHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithm, KeySize);
 
-        return CryptographicOperations.FixedTimeEquals(hash, computedHash);
+            return CryptographicOperations.FixedTimeEquals(hash, computedHash);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
